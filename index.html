@@ -108,7 +108,7 @@
 
         .metrics-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 20px;
             padding: 20px 30px;
             background: #f8f9fa;
@@ -305,15 +305,6 @@
                 <label for="minShare">Min Norway Share %:</label>
                 <input type="number" id="minShare" placeholder="e.g., 10" step="0.1">
             </div>
-            <div class="control-group">
-                <label for="sortBy">Sort by:</label>
-                <select id="sortBy">
-                    <option value="norwayStreams">Norway Streams</option>
-                    <option value="globalStreams">Global Streams</option>
-                    <option value="norwayShare">Norway Share %</option>
-                    <option value="daysOnChart">Days on Chart</option>
-                </select>
-            </div>
         </div>
 
         <div class="metrics-grid">
@@ -325,9 +316,16 @@
                 <div class="metric-value" id="totalGlobalStreams">0</div>
                 <div class="metric-label">Total Nordic Streams</div>
             </div>
+            <div class="metric-card artists">
+                <div class="metric-value" id="totalGlobalAllStreams">0</div>
+                <div class="metric-label">Global Streams</div>
+            </div>
             <div class="metric-card norway">
                 <div class="metric-value" id="norwayGlobalShare">0%</div>
                 <div class="metric-label">Nordic Share of Global</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="nordicShareBar" style="width: 0%"></div>
+                </div>
             </div>
         </div>
 
@@ -343,10 +341,11 @@
                                     <th>Change</th>
                                     <th>Artist</th>
                                     <th>Track</th>
-                                    <th>Norway Streams</th>
-                                    <th>Denmark Streams</th>
-                                    <th>Sweden Streams</th>
-                                    <th>Finland Streams</th>
+                                    <th>🇳🇴 Norway Streams</th>
+                                    <th>🇩🇰 Denmark Streams</th>
+                                    <th>🇸🇪 Sweden Streams</th>
+                                    <th>🇫🇮 Finland Streams</th>
+                                    <th>Total HT Streams</th>
                                     <th>Global Streams</th>
                                     <th>Norway Share %</th>
                                 </tr>
@@ -430,13 +429,15 @@
             const totalDenmark = filteredData.reduce((sum, item) => sum + (item.denmarkStreams || 0), 0);
             const totalSweden = filteredData.reduce((sum, item) => sum + (item.swedenStreams || 0), 0);
             const totalFinland = filteredData.reduce((sum, item) => sum + (item.finlandStreams || 0), 0);
-            const totalGlobal = filteredData.reduce((sum, item) => sum + item.globalStreams, 0);
+            const totalGlobalAll = filteredData.reduce((sum, item) => sum + item.globalStreams, 0);
             const totalNordic = totalNorway + totalDenmark + totalSweden + totalFinland;
-            const nordicGlobalShare = totalGlobal > 0 ? (totalNordic / totalGlobal) * 100 : 0;
+            const nordicGlobalShare = totalGlobalAll > 0 ? (totalNordic / totalGlobalAll) * 100 : 0;
 
             document.getElementById('totalNorwayStreams').textContent = formatNumber(totalNorway);
             document.getElementById('totalGlobalStreams').textContent = formatNumber(totalNordic);
+            document.getElementById('totalGlobalAllStreams').textContent = formatNumber(totalGlobalAll);
             document.getElementById('norwayGlobalShare').textContent = nordicGlobalShare.toFixed(2) + '%';
+            document.getElementById('nordicShareBar').style.width = Math.min(nordicGlobalShare, 100) + '%';
         }
 
         function getRankChangeIcon(rankChange, currentRank, previousRank) {
@@ -466,6 +467,12 @@
                 const formatNordicStreams = (streams) => {
                     return streams ? formatNumber(streams) : '-';
                 };
+
+                // Calculate Total HT Streams (sum of all Nordic countries)
+                const totalHTStreams = item.norwayStreams + 
+                                     (item.denmarkStreams || 0) + 
+                                     (item.swedenStreams || 0) + 
+                                     (item.finlandStreams || 0);
                 
                 row.innerHTML = `
                     <td class="rank-column">${currentRank}</td>
@@ -476,8 +483,14 @@
                     <td>${formatNordicStreams(item.denmarkStreams)}</td>
                     <td>${formatNordicStreams(item.swedenStreams)}</td>
                     <td>${formatNordicStreams(item.finlandStreams)}</td>
+                    <td><strong>${formatNumber(totalHTStreams)}</strong></td>
                     <td>${formatNumber(item.globalStreams)}</td>
-                    <td>${item.norwayShare.toFixed(2)}%</td>
+                    <td>
+                        ${item.norwayShare.toFixed(2)}%
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${Math.min(item.norwayShare, 100)}%"></div>
+                        </div>
+                    </td>
                 `;
                 tbody.appendChild(row);
             });
@@ -542,7 +555,6 @@
             const artistFilter = document.getElementById('artistFilter').value;
             const minStreams = parseInt(document.getElementById('minStreams').value) || 0;
             const minShare = parseFloat(document.getElementById('minShare').value) || 0;
-            const sortBy = document.getElementById('sortBy').value;
 
             filteredData = musicData.filter(item => {
                 return (!artistFilter || item.artist === artistFilter) &&
@@ -550,12 +562,8 @@
                        item.norwayShare >= minShare;
             });
 
-            // Sort data
-            filteredData.sort((a, b) => {
-                const aVal = a[sortBy] || 0;
-                const bVal = b[sortBy] || 0;
-                return bVal - aVal;
-            });
+            // Sort by Norway streams by default
+            filteredData.sort((a, b) => b.norwayStreams - a.norwayStreams);
 
             updateMetrics();
             updateTable();
@@ -577,7 +585,6 @@
             document.getElementById('artistFilter').addEventListener('change', applyFilters);
             document.getElementById('minStreams').addEventListener('input', applyFilters);
             document.getElementById('minShare').addEventListener('input', applyFilters);
-            document.getElementById('sortBy').addEventListener('change', applyFilters);
         }
 
         // Initialize dashboard
