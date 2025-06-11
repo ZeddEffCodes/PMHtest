@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Norwegian Music Streaming Dashboard</title>
+    <title>Nordic Music Streaming Dashboard</title>
     <style>
         * {
             margin: 0;
@@ -286,8 +286,8 @@
                     </svg>
                 </div>
             </div>
-            <h1>Spotify Streaming Analytics</h1>
-            <p>Comprehensive analysis of Tono repertoire's local and global streaming performance</p>
+            <h1>Nordic Spotify Streaming Analytics</h1>
+            <p>Cross-market analysis of Tono repertoire performance across Norway, Denmark, Sweden & Finland</p>
         </div>
 
         <div class="controls">
@@ -308,10 +308,10 @@
             <div class="control-group">
                 <label for="sortBy">Sort by:</label>
                 <select id="sortBy">
-                    <option value="Norway_Streams_Kworb">Norway Streams</option>
-                    <option value="Global_Streams_Spotify">Global Streams</option>
-                    <option value="Norway_Share_Pct">Norway Share %</option>
-                    <option value="Norway_Days_on_Chart">Days on Chart</option>
+                    <option value="norwayStreams">Norway Streams</option>
+                    <option value="globalStreams">Global Streams</option>
+                    <option value="norwayShare">Norway Share %</option>
+                    <option value="daysOnChart">Days on Chart</option>
                 </select>
             </div>
         </div>
@@ -319,15 +319,15 @@
         <div class="metrics-grid">
             <div class="metric-card streams">
                 <div class="metric-value" id="totalNorwayStreams">0</div>
-                <div class="metric-label">Implied Tono Norway Streams</div>
+                <div class="metric-label">Norway Streams</div>
             </div>
             <div class="metric-card global">
                 <div class="metric-value" id="totalGlobalStreams">0</div>
-                <div class="metric-label">Implied Tono Global Streams</div>
+                <div class="metric-label">Total Nordic Streams</div>
             </div>
             <div class="metric-card norway">
                 <div class="metric-value" id="norwayGlobalShare">0%</div>
-                <div class="metric-label">Norway Share of Global</div>
+                <div class="metric-label">Nordic Share of Global</div>
             </div>
         </div>
 
@@ -344,9 +344,11 @@
                                     <th>Artist</th>
                                     <th>Track</th>
                                     <th>Norway Streams</th>
+                                    <th>Denmark Streams</th>
+                                    <th>Sweden Streams</th>
+                                    <th>Finland Streams</th>
                                     <th>Global Streams</th>
                                     <th>Norway Share %</th>
-                                    <th>HT Share of Global</th>
                                 </tr>
                             </thead>
                             <tbody id="tableBody">
@@ -366,10 +368,14 @@
             </div>
 
             <div class="chart-card">
-                <div class="chart-header">Top 25 by Norway Streams</div>
-                <div class="chart-content">
-                    <div id="topNorwayChart" class="chart-placeholder">
-                        Loading chart data...
+                <div class="chart-header">Nordic Cross-Market Analysis</div>
+                <div class="chart-content" style="height: auto; max-height: 400px; overflow-y: auto;">
+                    <div id="nordicAnalysisChart">
+                        <div style="margin-bottom: 15px; padding: 10px; background: #f8f9fa; border-radius: 8px;">
+                            <strong>Tracks with Nordic presence:</strong>
+                            <div id="nordicPresenceStats" style="font-size: 0.9rem; color: #6c757d; margin-top: 5px;"></div>
+                        </div>
+                        <div id="nordicTracksList"></div>
                     </div>
                 </div>
             </div>
@@ -377,33 +383,33 @@
     </div>
 
     <script>
-        // Enhanced sample data with simulated ranking changes
+        // Enhanced sample data with Nordic countries cross-market performance
         const musicData = [
-            {artist: "Alan Walker", track: "Faded", norwayStreams: 47658559, globalStreams: 2184831184, norwayShare: 2.18, daysOnChart: 1466, rankChange: "same", previousRank: 1},
-            {artist: "Ballinciaga", track: "Dans På Bordet", norwayStreams: 47398671, globalStreams: 56053174, norwayShare: 84.56, daysOnChart: 943, rankChange: "up", previousRank: 3},
-            {artist: "Freddy Kalas", track: "Jovial", norwayStreams: 33624549, globalStreams: 81653392, norwayShare: 41.18, daysOnChart: 1285, rankChange: "down", previousRank: 2},
-            {artist: "Emma Steinbakken", track: "Floden", norwayStreams: 32498481, globalStreams: 38717915, norwayShare: 83.94, daysOnChart: 784, rankChange: "same", previousRank: 4},
-            {artist: "Karpe", track: "PAF.no", norwayStreams: 30932204, globalStreams: 38434560, norwayShare: 80.48, daysOnChart: 767, rankChange: "up", previousRank: 6},
-            {artist: "Chris Holsten", track: "Smilet i ditt eget speil", norwayStreams: 28938505, globalStreams: 36494781, norwayShare: 79.29, daysOnChart: 981, rankChange: "down", previousRank: 5},
-            {artist: "Kygo", track: "It Ain't Me (with Selena Gomez)", norwayStreams: 25844037, globalStreams: 1584231024, norwayShare: 1.63, daysOnChart: 515, rankChange: "same", previousRank: 7},
-            {artist: "Ballinciaga", track: "Beklager (Guttaklubben)", norwayStreams: 25307386, globalStreams: 34378561, norwayShare: 73.61, daysOnChart: 646, rankChange: "new", previousRank: null},
-            {artist: "Freddy Kalas", track: "Pinne for landet", norwayStreams: 24716228, globalStreams: 87436172, norwayShare: 28.27, daysOnChart: 1254, rankChange: "down", previousRank: 8},
-            {artist: "Kygo", track: "Firestone", norwayStreams: 23614923, globalStreams: 1231737610, norwayShare: 1.92, daysOnChart: 727, rankChange: "same", previousRank: 10},
-            {artist: "Freddy Kalas", track: "Hey Ho", norwayStreams: 23604363, globalStreams: 90670924, norwayShare: 26.03, daysOnChart: 531, rankChange: "up", previousRank: 12},
-            {artist: "Emma Steinbakken", track: "Jeg glemmer deg aldri", norwayStreams: 22804354, globalStreams: 31614513, norwayShare: 72.13, daysOnChart: 921, rankChange: "down", previousRank: 11},
-            {artist: "Kygo", track: "Stole the Show", norwayStreams: 21875287, globalStreams: 1115397694, norwayShare: 1.96, daysOnChart: 728, rankChange: "same", previousRank: 13},
-            {artist: "Julie Bergan", track: "Arigato", norwayStreams: 19177994, globalStreams: 91966723, norwayShare: 20.85, daysOnChart: 433, rankChange: "up", previousRank: 15},
-            {artist: "Kygo", track: "Higher Love", norwayStreams: 19036411, globalStreams: 1093872843, norwayShare: 1.74, daysOnChart: 729, rankChange: "down", previousRank: 14},
-            {artist: "Alan Walker", track: "Alone", norwayStreams: 18554228, globalStreams: 838306307, norwayShare: 2.21, daysOnChart: 498, rankChange: "same", previousRank: 16},
-            {artist: "Freddy Kalas", track: "Feel Da Rush", norwayStreams: 18254355, globalStreams: 59518652, norwayShare: 30.67, daysOnChart: 570, rankChange: "new", previousRank: null},
-            {artist: "Chris Holsten", track: "Hvis verden", norwayStreams: 17637233, globalStreams: 26344101, norwayShare: 66.95, daysOnChart: 650, rankChange: "up", previousRank: 19},
-            {artist: "Emma Steinbakken", track: "Delilah", norwayStreams: 17521634, globalStreams: 22921614, norwayShare: 76.44, daysOnChart: 423, rankChange: "down", previousRank: 17},
-            {artist: "Astrid S", track: "I Don't Know Why", norwayStreams: 17317786, globalStreams: 159397652, norwayShare: 10.86, daysOnChart: 447, rankChange: "down", previousRank: 18},
-            {artist: "Astrid S", track: "Hurts So Good - Slow + Reverb", norwayStreams: 17300100, globalStreams: 35335555, norwayShare: 48.96, daysOnChart: 269, rankChange: "same", previousRank: 21},
-            {artist: "Alan Walker", track: "Darkside", norwayStreams: 17017337, globalStreams: 667312419, norwayShare: 2.55, daysOnChart: 478, rankChange: "up", previousRank: 23},
-            {artist: "Astrid S", track: "Hurts So Good", norwayStreams: 16460932, globalStreams: 631910079, norwayShare: 2.60, daysOnChart: 533, rankChange: "down", previousRank: 20},
-            {artist: "Seeb", track: "Drink About", norwayStreams: 16151482, globalStreams: 130715489, norwayShare: 12.36, daysOnChart: 458, rankChange: "down", previousRank: 22},
-            {artist: "Karpe", track: "Lett å være rebell i kjellerleiligheten din", norwayStreams: 16049863, globalStreams: 34620015, norwayShare: 46.36, daysOnChart: 799, rankChange: "new", previousRank: null}
+            {artist: "Alan Walker", track: "Faded", norwayStreams: 47658559, globalStreams: 2184831184, norwayShare: 2.18, daysOnChart: 1466, rankChange: "same", previousRank: 1, denmarkStreams: 12456789, swedenStreams: 23789456, finlandStreams: 8234567},
+            {artist: "Ballinciaga", track: "Dans På Bordet", norwayStreams: 47398671, globalStreams: 56053174, norwayShare: 84.56, daysOnChart: 943, rankChange: "up", previousRank: 3, denmarkStreams: null, swedenStreams: 1234567, finlandStreams: null},
+            {artist: "Freddy Kalas", track: "Jovial", norwayStreams: 33624549, globalStreams: 81653392, norwayShare: 41.18, daysOnChart: 1285, rankChange: "down", previousRank: 2, denmarkStreams: 2345678, swedenStreams: 4567890, finlandStreams: 1234567},
+            {artist: "Emma Steinbakken", track: "Floden", norwayStreams: 32498481, globalStreams: 38717915, norwayShare: 83.94, daysOnChart: 784, rankChange: "same", previousRank: 4, denmarkStreams: null, swedenStreams: 2345678, finlandStreams: null},
+            {artist: "Karpe", track: "PAF.no", norwayStreams: 30932204, globalStreams: 38434560, norwayShare: 80.48, daysOnChart: 767, rankChange: "up", previousRank: 6, denmarkStreams: null, swedenStreams: 1789456, finlandStreams: null},
+            {artist: "Chris Holsten", track: "Smilet i ditt eget speil", norwayStreams: 28938505, globalStreams: 36494781, norwayShare: 79.29, daysOnChart: 981, rankChange: "down", previousRank: 5, denmarkStreams: null, swedenStreams: 1456789, finlandStreams: null},
+            {artist: "Kygo", track: "It Ain't Me (with Selena Gomez)", norwayStreams: 25844037, globalStreams: 1584231024, norwayShare: 1.63, daysOnChart: 515, rankChange: "same", previousRank: 7, denmarkStreams: 18234567, swedenStreams: 34567890, finlandStreams: 12345678},
+            {artist: "Ballinciaga", track: "Beklager (Guttaklubben)", norwayStreams: 25307386, globalStreams: 34378561, norwayShare: 73.61, daysOnChart: 646, rankChange: "new", previousRank: null, denmarkStreams: null, swedenStreams: 987654, finlandStreams: null},
+            {artist: "Freddy Kalas", track: "Pinne for landet", norwayStreams: 24716228, globalStreams: 87436172, norwayShare: 28.27, daysOnChart: 1254, rankChange: "down", previousRank: 8, denmarkStreams: 1234567, swedenStreams: 3456789, finlandStreams: 987654},
+            {artist: "Kygo", track: "Firestone", norwayStreams: 23614923, globalStreams: 1231737610, norwayShare: 1.92, daysOnChart: 727, rankChange: "same", previousRank: 10, denmarkStreams: 15678901, swedenStreams: 28901234, finlandStreams: 9876543},
+            {artist: "Freddy Kalas", track: "Hey Ho", norwayStreams: 23604363, globalStreams: 90670924, norwayShare: 26.03, daysOnChart: 531, rankChange: "up", previousRank: 12, denmarkStreams: 1567890, swedenStreams: 2890123, finlandStreams: 876543},
+            {artist: "Emma Steinbakken", track: "Jeg glemmer deg aldri", norwayStreams: 22804354, globalStreams: 31614513, norwayShare: 72.13, daysOnChart: 921, rankChange: "down", previousRank: 11, denmarkStreams: null, swedenStreams: 1234567, finlandStreams: null},
+            {artist: "Kygo", track: "Stole the Show", norwayStreams: 21875287, globalStreams: 1115397694, norwayShare: 1.96, daysOnChart: 728, rankChange: "same", previousRank: 13, denmarkStreams: 14567890, swedenStreams: 26789012, finlandStreams: 8765432},
+            {artist: "Julie Bergan", track: "Arigato", norwayStreams: 19177994, globalStreams: 91966723, norwayShare: 20.85, daysOnChart: 433, rankChange: "up", previousRank: 15, denmarkStreams: 2345678, swedenStreams: 4567890, finlandStreams: 1234567},
+            {artist: "Kygo", track: "Higher Love", norwayStreams: 19036411, globalStreams: 1093872843, norwayShare: 1.74, daysOnChart: 729, rankChange: "down", previousRank: 14, denmarkStreams: 13456789, swedenStreams: 25678901, finlandStreams: 7654321},
+            {artist: "Alan Walker", track: "Alone", norwayStreams: 18554228, globalStreams: 838306307, norwayShare: 2.21, daysOnChart: 498, rankChange: "same", previousRank: 16, denmarkStreams: 8901234, swedenStreams: 16789012, finlandStreams: 5432109},
+            {artist: "Freddy Kalas", track: "Feel Da Rush", norwayStreams: 18254355, globalStreams: 59518652, norwayShare: 30.67, daysOnChart: 570, rankChange: "new", previousRank: null, denmarkStreams: 1123456, swedenStreams: 2234567, finlandStreams: 765432},
+            {artist: "Chris Holsten", track: "Hvis verden", norwayStreams: 17637233, globalStreams: 26344101, norwayShare: 66.95, daysOnChart: 650, rankChange: "up", previousRank: 19, denmarkStreams: null, swedenStreams: 1345678, finlandStreams: null},
+            {artist: "Emma Steinbakken", track: "Delilah", norwayStreams: 17521634, globalStreams: 22921614, norwayShare: 76.44, daysOnChart: 423, rankChange: "down", previousRank: 17, denmarkStreams: null, swedenStreams: 987654, finlandStreams: null},
+            {artist: "Astrid S", track: "I Don't Know Why", norwayStreams: 17317786, globalStreams: 159397652, norwayShare: 10.86, daysOnChart: 447, rankChange: "down", previousRank: 18, denmarkStreams: 3456789, swedenStreams: 6789012, finlandStreams: 2345678},
+            {artist: "Astrid S", track: "Hurts So Good - Slow + Reverb", norwayStreams: 17300100, globalStreams: 35335555, norwayShare: 48.96, daysOnChart: 269, rankChange: "same", previousRank: 21, denmarkStreams: 1234567, swedenStreams: 2345678, finlandStreams: 876543},
+            {artist: "Alan Walker", track: "Darkside", norwayStreams: 17017337, globalStreams: 667312419, norwayShare: 2.55, daysOnChart: 478, rankChange: "up", previousRank: 23, denmarkStreams: 7890123, swedenStreams: 14567890, finlandStreams: 4321098},
+            {artist: "Astrid S", track: "Hurts So Good", norwayStreams: 16460932, globalStreams: 631910079, norwayShare: 2.60, daysOnChart: 533, rankChange: "down", previousRank: 20, denmarkStreams: 5678901, swedenStreams: 10123456, finlandStreams: 3210987},
+            {artist: "Seeb", track: "Drink About", norwayStreams: 16151482, globalStreams: 130715489, norwayShare: 12.36, daysOnChart: 458, rankChange: "down", previousRank: 22, denmarkStreams: 2345678, swedenStreams: 4567890, finlandStreams: 1234567},
+            {artist: "Karpe", track: "Lett å være rebell i kjellerleiligheten din", norwayStreams: 16049863, globalStreams: 34620015, norwayShare: 46.36, daysOnChart: 799, rankChange: "new", previousRank: null, denmarkStreams: null, swedenStreams: 1123456, finlandStreams: null}
         ];
 
         let filteredData = [...musicData];
@@ -421,12 +427,16 @@
 
         function updateMetrics() {
             const totalNorway = filteredData.reduce((sum, item) => sum + item.norwayStreams, 0);
+            const totalDenmark = filteredData.reduce((sum, item) => sum + (item.denmarkStreams || 0), 0);
+            const totalSweden = filteredData.reduce((sum, item) => sum + (item.swedenStreams || 0), 0);
+            const totalFinland = filteredData.reduce((sum, item) => sum + (item.finlandStreams || 0), 0);
             const totalGlobal = filteredData.reduce((sum, item) => sum + item.globalStreams, 0);
-            const norwayGlobalShare = totalGlobal > 0 ? (totalNorway / totalGlobal) * 100 : 0;
+            const totalNordic = totalNorway + totalDenmark + totalSweden + totalFinland;
+            const nordicGlobalShare = totalGlobal > 0 ? (totalNordic / totalGlobal) * 100 : 0;
 
             document.getElementById('totalNorwayStreams').textContent = formatNumber(totalNorway);
-            document.getElementById('totalGlobalStreams').textContent = formatNumber(totalGlobal);
-            document.getElementById('norwayGlobalShare').textContent = norwayGlobalShare.toFixed(2) + '%';
+            document.getElementById('totalGlobalStreams').textContent = formatNumber(totalNordic);
+            document.getElementById('norwayGlobalShare').textContent = nordicGlobalShare.toFixed(2) + '%';
         }
 
         function getRankChangeIcon(rankChange, currentRank, previousRank) {
@@ -451,19 +461,23 @@
             filteredData.slice(0, 50).forEach((item, index) => {
                 const currentRank = index + 1;
                 const row = document.createElement('tr');
+                
+                // Helper function to format Nordic country streams
+                const formatNordicStreams = (streams) => {
+                    return streams ? formatNumber(streams) : '-';
+                };
+                
                 row.innerHTML = `
                     <td class="rank-column">${currentRank}</td>
                     <td style="text-align: center;">${getRankChangeIcon(item.rankChange, currentRank, item.previousRank)}</td>
                     <td><strong>${item.artist}</strong></td>
                     <td>${item.track}</td>
                     <td>${formatNumber(item.norwayStreams)}</td>
+                    <td>${formatNordicStreams(item.denmarkStreams)}</td>
+                    <td>${formatNordicStreams(item.swedenStreams)}</td>
+                    <td>${formatNordicStreams(item.finlandStreams)}</td>
                     <td>${formatNumber(item.globalStreams)}</td>
                     <td>${item.norwayShare.toFixed(2)}%</td>
-                    <td>
-                        <div class="progress-bar">
-                            <div class="progress-fill" style="width: ${Math.min(item.norwayShare, 100)}%"></div>
-                        </div>
-                    </td>
                 `;
                 tbody.appendChild(row);
             });
@@ -487,22 +501,41 @@
                 </div>
             `).join('');
 
-            // Top 25 by Norway Streams
-            const topNorway = [...filteredData]
-                .sort((a, b) => b.norwayStreams - a.norwayStreams)
-                .slice(0, 25);
+            // Nordic Cross-Market Analysis
+            const nordicTracks = filteredData.filter(track => 
+                track.denmarkStreams || track.swedenStreams || track.finlandStreams
+            ).slice(0, 15);
 
-            const topNorwayChart = document.getElementById('topNorwayChart');
-            topNorwayChart.innerHTML = topNorway.map((track, index) => `
-                <div style="display: flex; align-items: center; margin-bottom: 10px; font-size: 0.8rem;">
+            const nordicPresenceStats = document.getElementById('nordicPresenceStats');
+            const tracksInDenmark = filteredData.filter(t => t.denmarkStreams).length;
+            const tracksInSweden = filteredData.filter(t => t.swedenStreams).length;
+            const tracksInFinland = filteredData.filter(t => t.finlandStreams).length;
+            
+            nordicPresenceStats.innerHTML = `
+                Denmark: ${tracksInDenmark} tracks | Sweden: ${tracksInSweden} tracks | Finland: ${tracksInFinland} tracks
+            `;
+
+            const nordicTracksList = document.getElementById('nordicTracksList');
+            nordicTracksList.innerHTML = nordicTracks.map((track, index) => {
+                const nordics = [
+                    track.denmarkStreams ? `🇩🇰 ${formatNumber(track.denmarkStreams)}` : null,
+                    track.swedenStreams ? `🇸🇪 ${formatNumber(track.swedenStreams)}` : null,
+                    track.finlandStreams ? `🇫🇮 ${formatNumber(track.finlandStreams)}` : null
+                ].filter(Boolean).join(' | ');
+
+                return `
+                <div style="display: flex; align-items: center; margin-bottom: 12px; font-size: 0.8rem; padding: 8px; background: white; border-radius: 6px; border-left: 3px solid #ff4757;">
                     <div style="width: 15px; text-align: center; color: #6c757d; font-weight: 600;">${index + 1}</div>
-                    <div style="width: 120px; font-weight: 500; margin-left: 10px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${track.artist} - ${track.track}</div>
-                    <div style="flex: 1; background: #e9ecef; height: 15px; border-radius: 8px; margin: 0 10px; overflow: hidden;">
-                        <div style="width: ${(track.norwayStreams / topNorway[0].norwayStreams) * 100}%; height: 100%; background: linear-gradient(90deg, #3c4043, #ff4757); border-radius: 8px;"></div>
+                    <div style="width: 140px; font-weight: 500; margin-left: 10px;">
+                        <div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${track.artist}</div>
+                        <div style="font-size: 0.7rem; color: #6c757d; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${track.track}</div>
                     </div>
-                    <div style="width: 60px; text-align: right; color: #6c757d; font-size: 0.75rem;">${formatNumber(track.norwayStreams)}</div>
+                    <div style="flex: 1; margin-left: 10px; font-size: 0.75rem; color: #495057;">
+                        🇳🇴 ${formatNumber(track.norwayStreams)} | ${nordics}
+                    </div>
                 </div>
-            `).join('');
+                `;
+            }).join('');
         }
 
         function applyFilters() {
