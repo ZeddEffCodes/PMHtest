@@ -1,0 +1,13 @@
+{
+  "name": "tono-spotify-analytics",
+  "version": "1.0.0",
+  "description": "Tono Spotify Streaming Analytics Dashboard",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx serve .",
+    "build": "echo 'No build needed'"
+  },
+  "dependencies": {
+    "serve": "^14.0.0"
+  }
+}
