@@ -44,12 +44,6 @@
             margin-bottom: 25px;
         }
 
-        .logo {
-            height: 50px;
-            width: auto;
-            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
-        }
-
         .logo.tono {
             background: #E50012;
             border-radius: 12px;
@@ -106,74 +100,8 @@
             box-shadow: 0 0 0 3px rgba(60, 64, 67, 0.1);
         }
 
-        .metrics-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            padding: 20px 30px;
-            background: #f8f9fa;
-        }
-
-        .metric-card {
-            background: white;
-            padding: 25px;
-            border-radius: 15px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-            border-left: 5px solid;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .metric-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
-        }
-
-        .metric-card.streams { border-left-color: #3c4043; }
-        .metric-card.artists { border-left-color: #f5f6fa; }
-        .metric-card.global { border-left-color: #ff4757; }
-        .metric-card.norway { border-left-color: #3c4043; }
-
-        .metric-value {
-            font-size: 2rem;
-            font-weight: 700;
-            margin-bottom: 5px;
-        }
-
-        .metric-label {
-            color: #6c757d;
-            font-size: 0.9rem;
-            font-weight: 500;
-        }
-
-        .growth-indicator {
-            font-size: 0.75rem;
-            padding: 2px 6px;
-            border-radius: 4px;
-            margin-top: 5px;
-            display: inline-block;
-            font-weight: 600;
-        }
-
-        .growth-positive {
-            background: #d4edda;
-            color: #155724;
-        }
-
-        .growth-negative {
-            background: #f8d7da;
-            color: #721c24;
-        }
-
-        .growth-neutral {
-            background: #e2e3e5;
-            color: #383d41;
-        }
-
         .charts-container {
             padding: 10px 30px 30px;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 30px;
         }
 
         .chart-card {
@@ -192,75 +120,90 @@
         }
 
         .chart-content {
-            padding: 20px;
-            height: 300px;
-            position: relative;
-        }
-
-        .table-container {
-            grid-column: 1 / -1;
-            margin-top: 20px;
+            padding: 0;
+            height: auto;
+            max-height: 600px;
+            overflow-y: auto;
         }
 
         .data-table {
             width: 100%;
             border-collapse: collapse;
             background: white;
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
         }
 
         .data-table th {
-            background: linear-gradient(135deg, #3c4043 0%, #ff4757 100%);
-            color: white;
+            background: #f8f9fa;
+            color: #495057;
             padding: 15px;
             text-align: left;
             font-weight: 600;
             font-size: 0.85rem;
+            border-bottom: 2px solid #e9ecef;
         }
 
         .data-table td {
             padding: 12px 15px;
             border-bottom: 1px solid #e9ecef;
-            font-size: 0.8rem;
+            font-size: 0.85rem;
         }
 
         .data-table tbody tr:hover {
             background: #f8f9fa;
         }
 
-        .progress-bar {
-            width: 100%;
-            height: 8px;
-            background: #e9ecef;
-            border-radius: 4px;
-            overflow: hidden;
-            margin-top: 5px;
+        .rank-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            font-weight: 700;
+            color: white;
+            font-size: 0.9rem;
         }
 
-        .progress-fill {
+        .rank-badge.top3 {
+            background: linear-gradient(135deg, #ffd700, #ffed4a);
+            color: #333;
+        }
+
+        .rank-badge.top10 {
+            background: linear-gradient(135deg, #c0c0c0, #e8e8e8);
+            color: #333;
+        }
+
+        .rank-badge.other {
+            background: linear-gradient(135deg, #3c4043, #ff4757);
+        }
+
+        .momentum-bar {
+            width: 100px;
+            height: 6px;
+            background: #e9ecef;
+            border-radius: 3px;
+            overflow: hidden;
+            margin: 3px 0;
+        }
+
+        .momentum-fill {
             height: 100%;
-            background: linear-gradient(90deg, #3c4043, #ff4757);
-            border-radius: 4px;
+            background: linear-gradient(90deg, #ff4757, #3c4043);
+            border-radius: 3px;
             transition: width 0.5s ease;
         }
 
-        .streams-with-growth {
-            display: flex;
-            flex-direction: column;
-            gap: 3px;
+        .artist-cell {
+            font-weight: 600;
+            color: #333;
         }
 
-        .streams-number {
-            font-weight: 600;
+        .streams-cell {
+            font-weight: 500;
         }
 
         @media (max-width: 768px) {
-            .charts-container {
-                grid-template-columns: 1fr;
-            }
-            
             .controls {
                 flex-direction: column;
                 align-items: stretch;
@@ -269,53 +212,10 @@
             .control-group {
                 width: 100%;
             }
-        }
 
-        .rank-change {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            font-size: 0.7rem;
-            font-weight: 600;
-            color: white;
-            margin: 0 auto;
-        }
-
-        .rank-change.up {
-            background: #27ae60;
-        }
-
-        .rank-change.down {
-            background: #e74c3c;
-        }
-
-        .rank-change.new {
-            background: #f39c12;
-        }
-
-        .rank-change.same {
-            background: #95a5a6;
-        }
-
-        .chart-placeholder {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 100%;
-            color: #6c757d;
-            font-style: italic;
-        }
-
-        .config-notice {
-            background: #fff3cd;
-            border: 1px solid #ffeaa7;
-            padding: 15px;
-            margin: 20px 30px;
-            border-radius: 8px;
-            color: #856404;
+            .data-table {
+                font-size: 0.8rem;
+            }
         }
     </style>
 </head>
@@ -332,22 +232,7 @@
                 </div>
             </div>
             <h1>Nordic Spotify Streaming Analytics</h1>
-            <p>Live data from BigQuery - Cross-market analysis of Tono repertoire performance</p>
-        </div>
-
-        <div class="config-notice" id="configNotice">
-            <div style="margin-bottom: 10px;">
-                ⚠️ <strong>API Key Required:</strong> Enter your BigQuery API key to load data.
-            </div>
-            <div style="display: flex; gap: 10px; align-items: center; margin-top: 10px;">
-                <input type="password" id="apiKeyInput" placeholder="Enter BigQuery API Key" style="flex: 1; padding: 8px;">
-                <button onclick="setApiKey()" style="padding: 8px 15px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">
-                    Connect
-                </button>
-            </div>
-            <div style="font-size: 0.8rem; color: #6c757d; margin-top: 5px;">
-                Your API key is stored locally and never sent to GitHub.
-            </div>
+            <p>Artist Momentum Rankings - TONO Repertoire Performance</p>
         </div>
 
         <div class="controls">
@@ -358,7 +243,7 @@
                 </select>
             </div>
             <div class="control-group">
-                <label for="minStreams">Min Norway Streams:</label>
+                <label for="minStreams">Min Total Streams:</label>
                 <input type="number" id="minStreams" placeholder="e.g., 1000000">
             </div>
             <div class="control-group">
@@ -368,251 +253,180 @@
             <div class="control-group">
                 <label for="sortBy">Rank by:</label>
                 <select id="sortBy">
-                    <option value="total_norway_streams">🇳🇴 Norway Streams</option>
-                    <option value="global_streams">🌍 Global Streams</option>
-                    <option value="norway_share_pct">📊 Norway Share %</option>
+                    <option value="momentum_composite_score">🚀 Momentum Score</option>
+                    <option value="total_current_streams">📊 Total Streams</option>
+                    <option value="norwegian_share_percent">🇳🇴 Norway Share %</option>
+                    <option value="total_stream_growth">📈 Stream Growth</option>
                 </select>
             </div>
         </div>
 
-        <div class="metrics-grid">
-            <div class="metric-card streams">
-                <div class="metric-value" id="totalNorwayStreams">0</div>
-                <div class="metric-label">Total Norway Streams</div>
-            </div>
-            <div class="metric-card global">
-                <div class="metric-value" id="totalGlobalStreams">0</div>
-                <div class="metric-label">Total Global Streams</div>
-            </div>
-            <div class="metric-card artists">
-                <div class="metric-value" id="uniqueArtists">0</div>
-                <div class="metric-label">Unique Artists</div>
-            </div>
-            <div class="metric-card norway">
-                <div class="metric-value" id="norwayGlobalShare">0%</div>
-                <div class="metric-label">Norway Share of Global</div>
-                <div class="progress-bar">
-                    <div class="progress-fill" id="nordicShareBar" style="width: 0%"></div>
-                </div>
-            </div>
-        </div>
-
         <div class="charts-container">
-            <div class="table-container">
-                <div class="chart-card">
-                    <div class="chart-header">Live BigQuery Results - Top 100</div>
-                    <div class="chart-content" style="height: auto; max-height: 600px; overflow-y: auto;">
-                        <table class="data-table" id="dataTable">
-                            <thead>
-                                <tr>
-                                    <th>Rank</th>
-                                    <th>Artist</th>
-                                    <th>Track</th>
-                                    <th>🇳🇴 Norway Streams</th>
-                                    <th>🌍 Global Streams</th>
-                                    <th>📊 Norway Share %</th>
-                                </tr>
-                            </thead>
-                            <tbody id="tableBody">
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
             <div class="chart-card">
-                <div class="chart-header">Top 25 by Global Streams</div>
+                <div class="chart-header">Artist Momentum Rankings</div>
                 <div class="chart-content">
-                    <div id="topGlobalChart" class="chart-placeholder">
-                        Loading chart data...
-                    </div>
-                </div>
-            </div>
-
-            <div class="chart-card">
-                <div class="chart-header">Nordic Cross-Market Analysis</div>
-                <div class="chart-content" style="height: auto; max-height: 400px; overflow-y: auto;">
-                    <div id="nordicAnalysisChart">
-                        <div style="margin-bottom: 15px; padding: 10px; background: #f8f9fa; border-radius: 8px;">
-                            <strong>Tracks with Nordic presence:</strong>
-                            <div id="nordicPresenceStats" style="font-size: 0.9rem; color: #6c757d; margin-top: 5px;"></div>
-                        </div>
-                        <div id="nordicTracksList"></div>
-                    </div>
+                    <table class="data-table" id="dataTable">
+                        <thead>
+                            <tr>
+                                <th>Rank</th>
+                                <th>Artist</th>
+                                <th>Total Streams</th>
+                                <th>Stream Growth</th>
+                                <th>Momentum Score</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody">
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        // ==========================================
-        // BIGQUERY CONFIGURATION - UPDATE THESE!
-        // ==========================================
-        const BIGQUERY_CONFIG = {
-            projectId: 'brave-standard-452712-d7', // This is safe to expose
-            apiKey: null, // Will be set by user input - NEVER hardcode this!
-            
-            // Your actual SQL query with filters applied
-            getQuery: (filters = {}) => {
-                let baseQuery = `
-                WITH
-                -- 🇳🇴 Norway streams (from Kworb)
-                norway_lifetime AS (
-                SELECT
-                TRIM(LOWER(artist)) AS artist,
-                TRIM(LOWER(title)) AS track,
-                SAFE_CAST(Total AS INT64) AS norway_streams
-                FROM \`brave-standard-452712-d7.nordic_streaming_analytics.Kworb_NO\`
-                WHERE DATE(timestamp) = '2025-07-29'
-                ),
-                -- 🌍 Global streams (max per track)
-                global_lifetime AS (
-                SELECT
-                TRIM(LOWER(artist)) AS artist,
-                TRIM(LOWER(track)) AS track,
-                MAX(SAFE_CAST(play_count_numeric AS INT64)) AS global_streams
-                FROM \`brave-standard-452712-d7.nordic_streaming_analytics.norwegian_spotify_live\`
-                GROUP BY artist, track
-                ),
-                -- 🔗 Join all fuzzy matches
-                joined AS (
-                SELECT
-                g.artist,
-                g.track AS global_track,
-                n.track AS norway_track,
-                n.norway_streams,
-                g.global_streams
-                FROM global_lifetime g
-                JOIN norway_lifetime n
-                ON g.artist = n.artist
-                AND (
-                STRPOS(g.track, n.track) > 0 OR STRPOS(n.track, g.track) > 0
-                )
-                WHERE g.global_streams > 0
-                AND n.norway_streams <= g.global_streams
-                ),
-                -- 📊 Group by global track and artist
-                grouped AS (
-                SELECT
-                artist,
-                global_track,
-                SUM(norway_streams) AS total_norway_streams,
-                MAX(global_streams) AS global_streams,
-                ROUND(SAFE_DIVIDE(SUM(norway_streams), MAX(global_streams)) * 100, 2) AS norway_share_pct
-                FROM joined
-                GROUP BY artist, global_track
-                )
-                -- 🏁 Final output with optional filters
-                SELECT *
-                FROM grouped
-                `;
-
-                const conditions = [];
-                
-                if (filters.artist && filters.artist !== '') {
-                    conditions.push(`LOWER(artist) LIKE LOWER('%${filters.artist.replace(/'/g, "\\'")}%')`);
-                }
-                
-                if (filters.minStreams && filters.minStreams > 0) {
-                    conditions.push(`total_norway_streams >= ${filters.minStreams}`);
-                }
-                
-                if (filters.minShare && filters.minShare > 0) {
-                    conditions.push(`norway_share_pct >= ${filters.minShare}`);
-                }
-
-                if (conditions.length > 0) {
-                    baseQuery += ' WHERE ' + conditions.join(' AND ');
-                }
-
-                // Add sorting
-                let sortColumn = 'total_norway_streams';
-                switch(filters.sortBy) {
-                    case 'global_streams':
-                        sortColumn = 'global_streams';
-                        break;
-                    case 'norway_share_pct':
-                        sortColumn = 'norway_share_pct';
-                        break;
-                    default:
-                        sortColumn = 'total_norway_streams';
-                }
-                
-                baseQuery += ` ORDER BY ${sortColumn} DESC LIMIT 100`;
-                return baseQuery;
-            }
-        };
-
+        let artistData = [];
         let filteredData = [];
 
-        async function loadMusicDataFromBigQuery(filters = {}) {
-            try {
-                const query = BIGQUERY_CONFIG.getQuery(filters);
-                
-                console.log('Executing BigQuery:', query);
-                
-                const requestBody = {
-                    query: query,
-                    useLegacySql: false,
-                    maxResults: 100
-                };
+        // CSV data embedded - exact order from spreadsheet
+        const csvData = `artist,total_current_streams,total_stream_growth,artist_velocity,median_track_growth,momentum_composite_score,norwegian_share_percent,norwegian_stream_growth,international_stream_growth,tracks_with_growth
+Tobias Sten,40253405,465232,1.1558,42750,0.94,83.0,386143,79089,9
+Ari Bajgora,58378071,273683,0.4688,13720,0.37,83.0,227157,46526,10
+Synne Vo,48203658,204509,0.4243,4203,0.31,83.0,169742,34767,10
+Ida-Lova,47399874,174080,0.3673,4939,0.27,83.0,144486,29594,11
+Fjellrev,88132279,149961,0.1702,13350,0.16,83.0,124468,25493,12
+Peder B. Helland,270683793,389161,0.1438,30184,0.19,18.0,70049,319112,13
+Marstein,95350883,130671,0.137,6307,0.11,82.9,108326,22345,14
+Søte og Rare Gutter,111927423,150816,0.1347,3544,0.1,81.5,122915,27901,15
+Golfklubb,152850978,180475,0.1181,14010,0.12,18.0,32486,147989,16
+Kudos,100873354,105055,0.1041,5633,0.09,18.0,18910,86145,17
+Ringnes-Ronny,208549846,115696,0.0555,10007,0.07,49.6,57385,58311,18
+AURORA,2298784795,1229375,0.0535,64095,0.23,8.0,98350,1131025,19
+Broiler,1350657614,604107,0.0447,5485,0.05,24.9,150423,453684,20
+TIX,229501405,100914,0.044,8456,0.06,83.0,83759,17155,21
+Madcon,1201422759,523621,0.0436,5509,0.05,18.0,94252,429369,22
+Emma Steinbakken,356498527,155085,0.0435,4253,0.04,82.0,127170,27915,23
+Alan Walker,7779605167,2686758,0.0345,202562,0.63,4.9,131651,2555107,24`;
 
-                const response = await fetch(
-                    `https://bigquery.googleapis.com/bigquery/v2/projects/${BIGQUERY_CONFIG.projectId}/queries?key=${BIGQUERY_CONFIG.apiKey}`,
-                    {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify(requestBody)
+        function parseCSV(csvString) {
+            const lines = csvString.trim().split('\n');
+            const headers = lines[0].split(',');
+            const data = [];
+            
+            for (let i = 1; i < lines.length; i++) {
+                const values = lines[i].split(',');
+                const row = {};
+                headers.forEach((header, index) => {
+                    const value = values[index];
+                    if (!isNaN(value) && value !== '') {
+                        row[header] = parseFloat(value);
+                    } else {
+                        row[header] = value;
                     }
-                );
-
-                if (!response.ok) {
-                    const errorText = await response.text();
-                    console.error('BigQuery API Error:', errorText);
-                    throw new Error(`BigQuery API error: ${response.status} - ${errorText}`);
-                }
-
-                const data = await response.json();
-                
-                if (data.errors && data.errors.length > 0) {
-                    console.error('BigQuery Query Errors:', data.errors);
-                    throw new Error(`BigQuery query error: ${data.errors[0].message}`);
-                }
-
-                if (!data.rows || data.rows.length === 0) {
-                    console.warn('No data returned from BigQuery');
-                    return [];
-                }
-
-                // Transform BigQuery results to dashboard format
-                return data.rows.map(row => ({
-                    artist: (row.f[0]?.v || '').split(' ').map(word => 
-                        word.charAt(0).toUpperCase() + word.slice(1)
-                    ).join(' '), // Convert to title case for display
-                    track: (row.f[1]?.v || '').split(' ').map(word => 
-                        word.charAt(0).toUpperCase() + word.slice(1)
-                    ).join(' '), // Convert to title case for display
-                    norwayStreams: parseInt(row.f[2]?.v) || 0,
-                    globalStreams: parseInt(row.f[3]?.v) || 0,
-                    norwayShare: parseFloat(row.f[4]?.v) || 0,
-                    // Simplified - no other Nordic countries or growth data for now
-                    denmarkStreams: null,
-                    swedenStreams: null,
-                    finlandStreams: null,
-                    norwayGrowth: 0,
-                    denmarkGrowth: null,
-                    swedenGrowth: null,
-                    finlandGrowth: null,
-                    globalGrowth: 0,
-                    rankChange: 'same',
-                    previousRank: null,
-                    daysOnChart: 0
-                }));
-
-            } catch (error) {
-                console.error('Error loading data from BigQuery:', error);
-                throw error;
+                });
+                row.originalRank = i;
+                data.push(row);
             }
+            return data;
         }
+
+        function formatNumber(num) {
+            if (num >= 1000000000) {
+                return (num / 1000000000).toFixed(1) + 'B';
+            } else if (num >= 1000000) {
+                return (num / 1000000).toFixed(1) + 'M';
+            } else if (num >= 1000) {
+                return (num / 1000).toFixed(1) + 'K';
+            }
+            return num.toString();
+        }
+
+        function getRankBadgeClass(rank) {
+            if (rank <= 3) return 'top3';
+            if (rank <= 10) return 'top10';
+            return 'other';
+        }
+
+        function updateTable(data) {
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = '';
+
+            data.forEach((item, index) => {
+                const row = document.createElement('tr');
+                const rank = index + 1;
+                
+                row.innerHTML = `
+                    <td>
+                        <div class="rank-badge ${getRankBadgeClass(rank)}">${rank}</div>
+                    </td>
+                    <td class="artist-cell">${item.artist}</td>
+                    <td class="streams-cell">${formatNumber(item.total_current_streams || 0)}</td>
+                    <td class="streams-cell">+${formatNumber(item.total_stream_growth || 0)}</td>
+                    <td>
+                        <div style="display: flex; flex-direction: column; align-items: flex-start;">
+                            <strong>${(item.momentum_composite_score || 0).toFixed(2)}</strong>
+                            <div class="momentum-bar">
+                                <div class="momentum-fill" style="width: ${(item.momentum_composite_score || 0) * 100}%"></div>
+                            </div>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function populateArtistFilter(data) {
+            const select = document.getElementById('artistFilter');
+            const artists = [...new Set(data.map(item => item.artist))].sort();
+            
+            select.innerHTML = '<option value="">All Artists</option>';
+            
+            artists.forEach(artist => {
+                const option = document.createElement('option');
+                option.value = artist;
+                option.textContent = artist;
+                select.appendChild(option);
+            });
+        }
+
+        function applyFilters() {
+            const artistFilter = document.getElementById('artistFilter').value;
+            const minStreams = parseInt(document.getElementById('minStreams').value) || 0;
+            const minShare = parseFloat(document.getElementById('minShare').value) || 0;
+            const sortBy = document.getElementById('sortBy').value;
+
+            filteredData = artistData.filter(item => {
+                return (!artistFilter || item.artist.toLowerCase().includes(artistFilter.toLowerCase())) &&
+                       (item.total_current_streams || 0) >= minStreams &&
+                       (item.norwegian_share_percent || 0) >= minShare;
+            });
+
+            if (sortBy === 'momentum_composite_score') {
+                filteredData.sort((a, b) => a.originalRank - b.originalRank);
+            } else {
+                filteredData.sort((a, b) => {
+                    const aVal = a[sortBy] || 0;
+                    const bVal = b[sortBy] || 0;
+                    return bVal - aVal;
+                });
+            }
+
+            updateTable(filteredData);
+        }
+
+        function initialize() {
+            artistData = parseCSV(csvData);
+            filteredData = [...artistData];
+            
+            populateArtistFilter(artistData);
+            applyFilters();
+
+            document.getElementById('artistFilter').addEventListener('change', applyFilters);
+            document.getElementById('minStreams').addEventListener('input', applyFilters);
+            document.getElementById('minShare').addEventListener('input', applyFilters);
+            document.getElementById('sortBy').addEventListener('change', applyFilters);
+        }
+
+        document.addEventListener('DOMContentLoaded', initialize);
+    </script>
+</body>
+</html>
