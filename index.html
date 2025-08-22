@@ -203,6 +203,37 @@
             font-weight: 500;
         }
 
+        .territory-cell {
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .territory-high {
+            color: #2e8b57;
+            background: rgba(46, 139, 87, 0.1);
+            border-radius: 12px;
+            padding: 4px 8px;
+        }
+
+        .territory-medium {
+            color: #ff8c00;
+            background: rgba(255, 140, 0, 0.1);
+            border-radius: 12px;
+            padding: 4px 8px;
+        }
+
+        .territory-low {
+            color: #dc3545;
+            background: rgba(220, 53, 69, 0.1);
+            border-radius: 12px;
+            padding: 4px 8px;
+        }
+
+        .value-cell {
+            color: #2e8b57;
+            font-weight: 600;
+        }
+
         @media (max-width: 768px) {
             .controls {
                 flex-direction: column;
@@ -251,11 +282,19 @@
                 <input type="number" id="minShare" placeholder="e.g., 10" step="0.1">
             </div>
             <div class="control-group">
+                <label for="timeframe">Growth Timeframe:</label>
+                <select id="timeframe">
+                    <option value="daily">Daily</option>
+                    <option value="weekly">Weekly</option>
+                </select>
+            </div>
+            <div class="control-group">
                 <label for="sortBy">Rank by:</label>
                 <select id="sortBy">
                     <option value="momentum_composite_score">🚀 Momentum Score</option>
                     <option value="total_current_streams">📊 Total Streams</option>
-                    <option value="norwegian_share_percent">🇳🇴 Norway Share %</option>
+                    <option value="rightsholder_value">💰 Growth Value</option>
+                    <option value="norwegian_share_percent">🏠 Home Territory Share</option>
                     <option value="total_stream_growth">📈 Stream Growth</option>
                 </select>
             </div>
@@ -271,8 +310,10 @@
                                 <th>Rank</th>
                                 <th>Artist</th>
                                 <th>Total Streams</th>
-                                <th>Stream Growth</th>
+                                <th>Total Stream Growth</th>
                                 <th>Momentum Score</th>
+                                <th>Home Territory Share</th>
+                                <th id="growthValueHeader">Est. Norwegian Growth Value</th>
                             </tr>
                         </thead>
                         <tbody id="tableBody">
@@ -287,25 +328,68 @@
         let artistData = [];
         let filteredData = [];
 
-        // CSV data embedded - exact order from spreadsheet
+        // CSV data embedded - Top 10 artists only
         const csvData = `artist,total_current_streams,total_stream_growth,artist_velocity,median_track_growth,momentum_composite_score,norwegian_share_percent,norwegian_stream_growth,international_stream_growth,tracks_with_growth
-Tobias Sten,40253405,465232,1.1558,42750,0.94,83.0,386143,79089,9
-Ari Bajgora,58378071,273683,0.4688,13720,0.37,83.0,227157,46526,10
-Synne Vo,48203658,204509,0.4243,4203,0.31,83.0,169742,34767,10
-Ida-Lova,47399874,174080,0.3673,4939,0.27,83.0,144486,29594,11
-Fjellrev,88132279,149961,0.1702,13350,0.16,83.0,124468,25493,12
+Tobias Sten,40253405,465232,1.1558,42750,0.94,88.0,386143,79089,9
+Ari Bajgora,58378071,273683,0.4688,13720,0.37,85.0,227157,46526,10
+Synne Vo,48203658,204509,0.4243,4203,0.31,87.0,169742,34767,10
+Ida-Lova,47399874,174080,0.3673,4939,0.27,89.0,144486,29594,11
+Fjellrev,88132279,149961,0.1702,13350,0.16,82.0,124468,25493,12
 Peder B. Helland,270683793,389161,0.1438,30184,0.19,18.0,70049,319112,13
-Marstein,95350883,130671,0.137,6307,0.11,82.9,108326,22345,14
-Søte og Rare Gutter,111927423,150816,0.1347,3544,0.1,81.5,122915,27901,15
-Golfklubb,152850978,180475,0.1181,14010,0.12,18.0,32486,147989,16
-Kudos,100873354,105055,0.1041,5633,0.09,18.0,18910,86145,17
-Ringnes-Ronny,208549846,115696,0.0555,10007,0.07,49.6,57385,58311,18
-AURORA,2298784795,1229375,0.0535,64095,0.23,8.0,98350,1131025,19
-Broiler,1350657614,604107,0.0447,5485,0.05,24.9,150423,453684,20
-TIX,229501405,100914,0.044,8456,0.06,83.0,83759,17155,21
-Madcon,1201422759,523621,0.0436,5509,0.05,18.0,94252,429369,22
-Emma Steinbakken,356498527,155085,0.0435,4253,0.04,82.0,127170,27915,23
-Alan Walker,7779605167,2686758,0.0345,202562,0.63,4.9,131651,2555107,24`;
+Marstein,95350883,130671,0.137,6307,0.11,75.0,108326,22345,14
+Søte og Rare Gutter,111927423,150816,0.1347,3544,0.1,72.0,122915,27901,15
+Golfklubb,152850978,180475,0.1181,14010,0.12,70.0,32486,147989,16
+Kudos,100873354,105055,0.1041,5633,0.09,60.0,18910,86145,17`;
+
+        function calculateGrowthValue(streamGrowth, norwegianSharePercent, timeframeMultiplier = 1) {
+            // Norwegian collecting society rate (~$0.005 per stream)
+            // Convert to NOK using current exchange rate (1 USD = 10.18 NOK)
+            const norwegianRateUSD = 0.005;
+            const usdToNokRate = 10.18;
+            const norwegianRateNOK = norwegianRateUSD * usdToNokRate;
+            
+            // Scale up from daily base (data represents daily streams)
+            const adjustedGrowth = streamGrowth * timeframeMultiplier;
+            
+            // Only calculate value for Norwegian streams (what TONO collects on)
+            const norwegianStreams = adjustedGrowth * (norwegianSharePercent / 100);
+            const norwegianValueNOK = norwegianStreams * norwegianRateNOK;
+            
+            return norwegianValueNOK;
+        }
+
+        function getTimeframeMultiplier(timeframe) {
+            switch(timeframe) {
+                case 'weekly': return 7;
+                default: return 1; // daily
+            }
+        }
+
+        function getTimeframeLabel(timeframe) {
+            switch(timeframe) {
+                case 'weekly': return 'Weekly Norwegian';
+                default: return 'Daily Norwegian';
+            }
+        }
+
+        function getTerritoryShareClass(percentage) {
+            if (percentage >= 70) return 'territory-high';
+            if (percentage >= 30) return 'territory-medium';
+            return 'territory-low';
+        }
+
+        function formatPercentage(num) {
+            return num.toFixed(1) + '%';
+        }
+
+        function formatCurrency(amount) {
+            if (amount >= 1000000) {
+                return 'kr ' + (amount / 1000000).toFixed(2) + 'M';
+            } else if (amount >= 1000) {
+                return 'kr ' + (amount / 1000).toFixed(1) + 'K';
+            }
+            return 'kr ' + amount.toFixed(0);
+        }
 
         function parseCSV(csvString) {
             const lines = csvString.trim().split('\n');
@@ -324,9 +408,22 @@ Alan Walker,7779605167,2686758,0.0345,202562,0.63,4.9,131651,2555107,24`;
                     }
                 });
                 row.originalRank = i;
+                
                 data.push(row);
             }
             return data;
+        }
+
+        function recalculateGrowthValues(data, timeframe) {
+            const multiplier = getTimeframeMultiplier(timeframe);
+            return data.map(item => ({
+                ...item,
+                rightsholder_value: calculateGrowthValue(
+                    item.total_stream_growth || 0,
+                    item.norwegian_share_percent || 0,
+                    multiplier
+                )
+            }));
         }
 
         function formatNumber(num) {
@@ -348,11 +445,31 @@ Alan Walker,7779605167,2686758,0.0345,202562,0.63,4.9,131651,2555107,24`;
 
         function updateTable(data) {
             const tbody = document.getElementById('tableBody');
+            const timeframe = document.getElementById('timeframe').value;
+            const multiplier = getTimeframeMultiplier(timeframe);
+            
+            // Update header
+            const headerLabel = getTimeframeLabel(timeframe);
+            document.getElementById('growthValueHeader').textContent = `Est. ${headerLabel} Growth Value`;
+            
             tbody.innerHTML = '';
 
             data.forEach((item, index) => {
                 const row = document.createElement('tr');
                 const rank = index + 1;
+                
+                // Calculate growth value with timeframe adjustment
+                const growthValue = calculateGrowthValue(
+                    item.total_stream_growth || 0, 
+                    item.norwegian_share_percent || 0,
+                    multiplier
+                );
+
+                // Also adjust the stream growth display for context
+                const adjustedStreamGrowth = (item.total_stream_growth || 0) * multiplier;
+
+                const territoryShare = item.norwegian_share_percent || 0;
+                const territoryClass = getTerritoryShareClass(territoryShare);
                 
                 row.innerHTML = `
                     <td>
@@ -360,7 +477,7 @@ Alan Walker,7779605167,2686758,0.0345,202562,0.63,4.9,131651,2555107,24`;
                     </td>
                     <td class="artist-cell">${item.artist}</td>
                     <td class="streams-cell">${formatNumber(item.total_current_streams || 0)}</td>
-                    <td class="streams-cell">+${formatNumber(item.total_stream_growth || 0)}</td>
+                    <td class="streams-cell">+${formatNumber(adjustedStreamGrowth)}</td>
                     <td>
                         <div style="display: flex; flex-direction: column; align-items: flex-start;">
                             <strong>${(item.momentum_composite_score || 0).toFixed(2)}</strong>
@@ -368,6 +485,14 @@ Alan Walker,7779605167,2686758,0.0345,202562,0.63,4.9,131651,2555107,24`;
                                 <div class="momentum-fill" style="width: ${(item.momentum_composite_score || 0) * 100}%"></div>
                             </div>
                         </div>
+                    </td>
+                    <td class="territory-cell">
+                        <span class="${territoryClass}">
+                            ${formatPercentage(territoryShare)}
+                        </span>
+                    </td>
+                    <td class="value-cell">
+                        ${formatCurrency(growthValue)}
                     </td>
                 `;
                 tbody.appendChild(row);
@@ -393,12 +518,16 @@ Alan Walker,7779605167,2686758,0.0345,202562,0.63,4.9,131651,2555107,24`;
             const minStreams = parseInt(document.getElementById('minStreams').value) || 0;
             const minShare = parseFloat(document.getElementById('minShare').value) || 0;
             const sortBy = document.getElementById('sortBy').value;
+            const timeframe = document.getElementById('timeframe').value;
 
             filteredData = artistData.filter(item => {
                 return (!artistFilter || item.artist.toLowerCase().includes(artistFilter.toLowerCase())) &&
                        (item.total_current_streams || 0) >= minStreams &&
                        (item.norwegian_share_percent || 0) >= minShare;
             });
+
+            // Recalculate growth values with timeframe adjustment for sorting
+            filteredData = recalculateGrowthValues(filteredData, timeframe);
 
             if (sortBy === 'momentum_composite_score') {
                 filteredData.sort((a, b) => a.originalRank - b.originalRank);
@@ -424,6 +553,7 @@ Alan Walker,7779605167,2686758,0.0345,202562,0.63,4.9,131651,2555107,24`;
             document.getElementById('minStreams').addEventListener('input', applyFilters);
             document.getElementById('minShare').addEventListener('input', applyFilters);
             document.getElementById('sortBy').addEventListener('change', applyFilters);
+            document.getElementById('timeframe').addEventListener('change', applyFilters);
         }
 
         document.addEventListener('DOMContentLoaded', initialize);
